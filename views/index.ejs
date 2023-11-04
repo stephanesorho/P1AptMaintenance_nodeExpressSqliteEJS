@@ -58,66 +58,33 @@
           </ul>
         </table>
 
-        <ul>
-          <% users.forEach(function(user){ %>
+
+
+        <div class="col-4">
+          <h2>Create User</h2>
+
+          <form action="/users/create" method="POST">
             <div>
-              <div>
-                <label>User ID: <output>
-                    <%= user.user_id %>
-                  </output></label>
-              </div>
-              <div>
-                <label>Tenant Name: <output>
-                    <%= user.name %>
-                  </output></label>
-              </div>
-              <div>
-                <label>Apartment Number: <output>
-                    <%= user.apt_number %>
-                  </output></label>
-              </div>
-              <div>
-                <label>Email: <output>
-                    <%= user.email %>
-                  </output></label>
-              </div>
-              <form action="/users/delete" method="POST">
-                <input type="hidden" name="user_id" value="<%= user.user_id %>">
-                <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
+              <label class="form-label">user_id:
+                <input required="true" name="user_id" type="number" class="form-control" /></label>
             </div>
-            <hr />
+            <div>
+              <label class="form-label">name:
+                <input required="true" name="name" type="text" class="form-control" /></label>
+            </div>
+            <div>
+              <label class="form-label">apt_number:
+                <input required="true" name="apt_number" type="number" class="form-control" /></label>
+            </div>
+            <div>
+              <label class="form-label">email:
+                <input required="true" name="email" type="text" class="form-control" /></label>
+            </div>
 
-            <% })%>
-        </ul>
-      </div>
-      <!-- /.col-8 -->
-
-      <div class="col-4">
-        <h2>Create User</h2>
-
-        <form action="/users/create" method="POST">
-          <div>
-            <label class="form-label">user_id:
-              <input required="true" name="user_id" type="number" class="form-control" /></label>
-          </div>
-          <div>
-            <label class="form-label">name:
-              <input required="true" name="name" type="text" class="form-control" /></label>
-          </div>
-          <div>
-            <label class="form-label">apt_number:
-              <input required="true" name="apt_number" type="number" class="form-control" /></label>
-          </div>
-          <div>
-            <label class="form-label">email:
-              <input required="true" name="email" type="text" class="form-control" /></label>
-          </div>
-
-          <button type="submit" class="btn btn-primary">Create</button>
-        </form>
-      </div>
-      <!-- /.col-4 -->
+            <button type="submit" class="btn btn-primary">Create</button>
+          </form>
+        </div>
+        <!-- /.col-4 -->
     </main>
 
     <footer>
