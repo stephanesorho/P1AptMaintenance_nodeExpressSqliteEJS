@@ -14,32 +14,30 @@
         </h1>
         <div class="container">
 
+            <form action="/users/create" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">
+                        Tenant Name
+                        <input type="text" name="name" class="form-control">
+                    </label>
+                </div>
+                <div class="mb-3">
 
-            <%- include("./partials/errMsg.ejs") %>
-                <form action="/users/create" method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Tenant Name
-                            <input type="text" name="name" class="form-control">
-                        </label>
-                    </div>
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Unit Number
-                            <input type="text" name="apt_number" class="form-control">
-                        </label>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Email
-                            <input type="text" name="email" class="form-control">
-                        </label>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn btn-primary">Create</button>
-                    </div>
-                </form>
+                    <label class="form-label">
+                        Unit Number
+                        <input type="text" name="apt_number" class="form-control">
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">
+                        Email
+                        <input type="text" name="email" class="form-control">
+                    </label>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
         </div>
         <%- include("./partials/footer.ejs") %>
 </body>

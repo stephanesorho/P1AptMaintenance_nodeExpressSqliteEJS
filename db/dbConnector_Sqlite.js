@@ -12,7 +12,9 @@ async function getUsers() {
   const db = await connect();
 
   try {
-    const users = await db.all(`SELECT * FROM User`);
+    const users = await db.all(
+      `SELECT user_id, name, apt_number, email FROM User`
+    );
 
     console.log("dbConnector got users", users);
     return users;
@@ -25,7 +27,7 @@ async function getUserById(user_id) {
   const db = await connect();
 
   try {
-    const stmt = await db.prepare(`SELECT *
+    const stmt = await db.prepare(`SELECT user_id, name, apt_number, email
     FROM User
     WHERE
       user_id = :user_id
@@ -125,10 +127,78 @@ async function createUser(newUser) {
   }
 }
 
+// *********** REQUESTS *********** //
+async function getRequests() {
+  const db = await connect();
+
+  try {
+    const requests = await db.all(
+      "SELECT title, request_id, user_id FROM Request"
+    );
+    return requests;
+  } finally {
+    await db.close();
+  }
+}
+
+async function getRequestById(request_id) {
+  const db = await connect();
+
+  try {
+    const stmt = await db.prepare(`SELECT title, request_id, user_id
+    FROM Request
+    WHERE
+      request_id = :request_id
+  `);
+
+    stmt.bind({
+      ":request_id": request_id,
+    });
+
+    const request = await stmt.all();
+
+    await stmt.finalize();
+
+    return request;
+  } finally {
+    await db.close();
+  }
+}
+
+async function updateRequest(request_id, newRequest) {
+  console.log("update request request_id ", request_id);
+  const db = await connect();
+
+  try {
+    const stmt = await db.prepare(`UPDATE Request
+    SET
+      title = :title
+    WHERE
+      request_id = :request_id
+  `);
+
+    stmt.bind({
+      ":title": newRequest.title,
+      ":request_id": request_id,
+    });
+
+    const result = await stmt.run();
+
+    await stmt.finalize();
+
+    return result;
+  } finally {
+    await db.close();
+  }
+}
+
 module.exports = {
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
   createUser,
+  getRequests,
+  getRequestById,
+  updateRequest,
 };

@@ -8,6 +8,9 @@ const {
   updateUser,
   deleteUser,
   createUser,
+  getRequests,
+  getRequestById,
+  updateRequest,
 } = require("../db/dbConnector_Sqlite.js");
 
 /* GET home page. */
@@ -138,12 +141,12 @@ router.post("/users/create", async function (req, res) {
     const users = await getUsers();
 
     if (sqlResCreate.changes === 1) {
-      res.redirect("/");
       res.render("index", {
         users,
         err: "User Created " + sqlResCreate.lastID,
         type: "success",
       });
+      // res.redirect("/");
     } else {
       res.render("user_create", {
         err: "Error inserting user",
@@ -155,6 +158,68 @@ router.post("/users/create", async function (req, res) {
     res.render("index", {
       users: null,
       err: "Error inserting user" + exception,
+      type: "danger",
+    });
+  }
+});
+
+// *********** REQUESTS *********** //
+
+/* GET requests page. */
+router.get("/requests", async function (req, res) {
+  console.log("Got requests page");
+
+  const requests = await getRequests();
+
+  console.log("got requests", requests);
+
+  res.render("requests", { requests });
+});
+
+/* Render request edit page. */
+router.get("/requests/:request_id/edit", async function (req, res) {
+  console.log("Edit route", req.params.request_id);
+
+  const sqlRes = await getRequestById(req.params.request_id);
+  console.log("request edit found request", sqlRes);
+
+  res.render("requests_edit", {
+    request: sqlRes[0],
+    err: null,
+    type: "success",
+  });
+});
+
+// Actually edits a Request in table
+router.post("/requests/:request_id/edit", async function (req, res) {
+  console.log("Edit route", req.params.request_id, req.body);
+
+  const request_id = req.params.request_id;
+  const newRequest = req.body;
+
+  try {
+    const sqlResUpdate = await updateRequest(request_id, newRequest);
+    console.log("Updating request", sqlResUpdate);
+
+    if (sqlResUpdate.changes === 1) {
+      const sqlResFind = await getRequestById(req.params.request_id);
+      res.render("requests_edit", {
+        request: sqlResFind[0],
+        err: "Request modified",
+        type: "success",
+      });
+    } else {
+      res.render("requests_edit", {
+        request: null,
+        err: "Error Updating Request " + req.params.request_id,
+        type: "danger",
+      });
+    }
+  } catch (exception) {
+    console.log("Error executing SQL", exception);
+    res.render("requests", {
+      request: null,
+      err: `Error executing SQL ${exception}`,
       type: "danger",
     });
   }
