@@ -11,6 +11,8 @@ const {
   getRequests,
   getRequestById,
   updateRequest,
+  deleteRequest,
+  createRequest,
 } = require("../db/dbConnector_Sqlite.js");
 
 /* GET home page. */
@@ -122,7 +124,7 @@ router.get("/users/:user_id/delete", async function (req, res) {
   }
 });
 
-// Render Create page
+// Render Create User page
 router.get("/users/create", async function (req, res) {
   console.log("Create route", req.params.user_id);
 
@@ -146,9 +148,8 @@ router.post("/users/create", async function (req, res) {
         err: "User Created " + sqlResCreate.lastID,
         type: "success",
       });
-      // res.redirect("/");
     } else {
-      res.render("user_create", {
+      res.render("users_create", {
         err: "Error inserting user",
         type: "danger",
       });
@@ -173,7 +174,7 @@ router.get("/requests", async function (req, res) {
 
   console.log("got requests", requests);
 
-  res.render("requests", { requests });
+  res.render("requests", { requests, err: null, type: "success" });
 });
 
 /* Render request edit page. */
@@ -220,6 +221,78 @@ router.post("/requests/:request_id/edit", async function (req, res) {
     res.render("requests", {
       request: null,
       err: `Error executing SQL ${exception}`,
+      type: "danger",
+    });
+  }
+});
+
+// Delete a Request
+router.get("/requests/:request_id/delete", async function (req, res) {
+  console.log("Delete route", req.params.user_id);
+
+  try {
+    const sqlResDelete = await deleteRequest(req.params.request_id);
+    console.log("Delete request result=", sqlResDelete);
+    const requests = await getRequests();
+
+    if (sqlResDelete.changes === 1) {
+      res.render("requests", {
+        requests,
+        err: "Request deleted",
+        type: "success",
+      });
+    } else {
+      res.render("requests", {
+        requests,
+        err: "Error deleting request",
+        type: "danger",
+      });
+    }
+  } catch (exception) {
+    console.log("Error executing SQL", exception);
+    res.render("requests", {
+      requests,
+      err: "Error executing SQL",
+      type: "danger",
+    });
+  }
+});
+
+// Render Create Request page
+router.get("/requests/create", async function (req, res) {
+  console.log("Create route", req.params.request_id);
+
+  res.render("requests_create", { err: null, type: "success" });
+});
+
+// Actually creates Request
+router.post("/requests/create", async function (req, res) {
+  console.log("Create route", req.body);
+
+  const newRequest = req.body;
+
+  try {
+    const sqlResCreate = await createRequest(newRequest);
+    console.log("Creating request", sqlResCreate);
+    const requests = await getRequests();
+
+    if (sqlResCreate.changes === 1) {
+      res.render("requests", {
+        requests,
+        err: "Request Created " + sqlResCreate.lastID,
+        type: "success",
+      });
+    } else {
+      res.render("requests_create", {
+        err: "Error inserting request",
+        type: "danger",
+      });
+    }
+  } catch (exception) {
+    console.log("Error executing SQL", exception);
+    res.render("requests", {
+      requests: null,
+      err: "Error creating request" + exception,
       type: "danger",
     });
   }

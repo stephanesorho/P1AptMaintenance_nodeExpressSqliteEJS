@@ -192,6 +192,55 @@ async function updateRequest(request_id, newRequest) {
   }
 }
 
+async function deleteRequest(request_id) {
+  console.log("deleting request ", request_id);
+  const db = await connect();
+
+  try {
+    const stmt = await db.prepare(`DELETE FROM Request
+    WHERE
+      request_id = :request_id
+  `);
+
+    stmt.bind({
+      ":request_id": request_id,
+    });
+
+    const result = await stmt.run();
+
+    await stmt.finalize();
+
+    return result;
+  } finally {
+    await db.close();
+  }
+}
+
+async function createRequest(newRequest) {
+  const db = await connect();
+
+  try {
+    const stmt = await db.prepare(`INSERT INTO
+    Request(title, request_id, user_id)
+    VALUES (:title, :request_id, :user_id)
+  `);
+
+    stmt.bind({
+      ":title": newRequest.title,
+      ":request_id": newRequest.request_id,
+      ":user_id": newRequest.user_id,
+    });
+
+    const result = await stmt.run();
+
+    await stmt.finalize();
+
+    return result;
+  } finally {
+    await db.close();
+  }
+}
+
 module.exports = {
   getUsers,
   getUserById,
@@ -201,4 +250,6 @@ module.exports = {
   getRequests,
   getRequestById,
   updateRequest,
+  deleteRequest,
+  createRequest,
 };
